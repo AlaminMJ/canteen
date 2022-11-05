@@ -1,0 +1,2 @@
+PORT = 3000
+DB_URL =DB_URL = mongodb+srv://alaminDev:t2CSVlJHK2gBAdVV@cluster0.begpz.mongodb.net/?retryWrites=true&w=majority

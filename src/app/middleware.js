@@ -2,4 +2,11 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
-export default [express.json(), cors(), morgan("dev"), helmet()];
+// app middleware
+export default [
+  express.json(),
+  express.urlencoded({ extended: false }),
+  cors(),
+  morgan("dev"),
+  helmet(),
+];
