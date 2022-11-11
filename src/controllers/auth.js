@@ -58,6 +58,37 @@ auth.register = async (req, res, next) => {
  * */
 auth.login = async (req, res, next) => {
   try {
+    const { email, password } = req.body;
+    const validate = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+    });
+    const { error } = validate.validate({ email, password });
+    if (error) {
+      return next(error);
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return next(createError("User not found"));
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return next(createError("Invalid password"));
+    }
+    const accessToken = jwt.sign({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+    const refreshToken = jwt.sign(
+      { _id: user._id, name: user.name, email: user.email },
+      JWT_REFRESH,
+      "30d"
+    );
+    return res.status(200).json({
+      accessToken,
+      refreshToken,
+    });
   } catch (error) {
     return next(error);
   }
