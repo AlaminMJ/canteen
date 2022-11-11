@@ -7,6 +7,6 @@ export default [
   express.json(),
   express.urlencoded({ extended: false }),
   cors(),
-  morgan("dev"),
+  morgan("tiny"),
   helmet(),
 ];
