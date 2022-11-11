@@ -1,12 +1,21 @@
+import { DEBUG_MODE } from "../config";
 import { ValidationError } from "joi";
-const errorHandeler = (err, req, res, next) => {
-  console.log(err);
-  let status = 500;
-  let message = { message: "internal server Error" };
+
+const errorHandler = (err, req, res, next) => {
+  let statusCode = 500;
+  let data = {
+    message: "Internal server error",
+    ...(DEBUG_MODE === "true" && { originalError: err.message }),
+  };
+
   if (err instanceof ValidationError) {
-    status = 403;
-    message.message = err.message;
+    statusCode = 422;
+    data = {
+      message: err.message,
+    };
   }
-  res.status(status).json(message);
+
+  return res.status(statusCode).json(data);
 };
-export default errorHandeler;
+
+export default errorHandler;
