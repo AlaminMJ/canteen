@@ -2,9 +2,12 @@ import Joi from "joi";
 import { jwt, bcrypt } from "../utils";
 import createError from "http-errors";
 import { JWT_REFRESH } from "../config";
+import { User } from "../models";
 
 const auth = {};
-// register
+/**
+ * register the authentication user
+ */
 auth.register = async (req, res, next) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
@@ -45,6 +48,51 @@ auth.register = async (req, res, next) => {
       refreshToken,
       user: { _id: user._id, name: user.name, email: user.email },
     });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ *Login user
+ * */
+auth.login = async (req, res, next) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ *get refreshToken
+ * */
+auth.refreshToken = async (req, res, next) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * validate  user email address
+ * */
+auth.validateEmail = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { email } = jwt.verify(token, JWT_REFRESH);
+    if (!email) {
+      return next(createError("Invalid Token"));
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return next(createError("User not found"));
+    }
+    if (user.isEmailVerified) {
+      return next(createError("Email already verified"));
+    }
+    user.isEmailVerified = true;
+    await user.save();
+    return res.status(200).json({ message: "Verify successfully" });
   } catch (error) {
     return next(error);
   }
